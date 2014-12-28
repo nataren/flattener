@@ -30,16 +30,22 @@ func main() {
 		Anonymous string   `xml:"anonymous,attr"`
 	}
 
+	type Parameter struct {
+		XMLName xml.Name `xml:"param"`
+		Name    string   `xml:"name,attr"`
+		Value   string   `xml:",innerxml"`
+	}
+
 	type Request struct {
-		XMLName   xml.Name  `xml:"request"`
-		Id        string    `xml:"id,attr"`
-		Seq       string    `xml:"seq,attr"`
-		Count     string    `xml:"count,attr"`
-		Signature Signature `xml:"signature"`
-		IP        IP        `xml:"ip"`
-		SessionId SessionId `xml:"session-id"`
-		// Parameters []string `xml:"parameters"`
-		User User `xml:"user"`
+		XMLName    xml.Name    `xml:"request"`
+		Id         string      `xml:"id,attr"`
+		Seq        string      `xml:"seq,attr"`
+		Count      string      `xml:"count,attr"`
+		Signature  Signature   `xml:"signature"`
+		IP         IP          `xml:"ip"`
+		SessionId  SessionId   `xml:"session-id"`
+		Parameters []Parameter `xml:"parameters>param"`
+		User       User        `xml:"user"`
 	}
 
 	type PagePath struct {
@@ -51,6 +57,13 @@ func main() {
 		XMLName xml.Name `xml:"page"`
 		Id      string   `xml:"id,attr"`
 		Path    PagePath `xml:"path"`
+	}
+
+	type File struct {
+		XMLName  xml.Name `xml:"file"`
+		Id       string   `xml:"id,attr"`
+		ResId    string   `xml:"res-id,attr"`
+		Filename string   `xml:"filename"`
 	}
 
 	type Data struct {
@@ -69,7 +82,9 @@ func main() {
 		Journaled string   `xml:"journaled,attr"`
 		Version   string   `xml:"version,attr"`
 		Request   Request  `xml:"request"`
+		IsImage   string   `xml:"isimage"`
 		Page      Page     `xml:"page"`
+		File      File     `xml:"file"`
 		Data      Data     `xml:"data"`
 	}
 
