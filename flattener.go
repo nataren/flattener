@@ -9,9 +9,40 @@ import (
 )
 
 func main() {
+	type Signature struct {
+		SignatureString string `xml:",innerxml"`
+	}
+
+	type IP struct {
+		IPString string `xml:",innerxml"`
+	}
+
+	type SessionId struct {
+		SessionIdString string `xml:",innerxml"`
+	}
+
+	type Request struct {
+		Id string `xml:"id,attr"`
+		Seq string `xml:"seq,attr"`
+		Count string `xml:"count,attr"`
+		Signature Signature `xml:"signature"`
+		IP IP `xml:"ip"`
+		SessionId SessionId `xml:"session-id"`
+		// Parameters []string `xml:"request>parameters"`
+	}
+
 	type MindTouchEvent struct {
 		XMLName xml.Name `xml:"event"`
 		Id  string  `xml:"id,attr"`
+		Datetime string `xml:"datetime,attr"`
+		Type string `xml:"type,attr"`
+		Wikiid string `xml:"wikiid,attr"`
+		Journaled string `xml:"journaled,attr"`
+		Version string `xml:"version,attr"`
+		Request Request `xml:"request"`
+		// RequestUser
+		// PageId
+		// PagePath string `xml:"page>path"`
 	}
 
 	// Open file
