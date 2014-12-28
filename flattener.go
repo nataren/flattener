@@ -136,8 +136,8 @@ func main() {
 		log.Fatal("Error creating file")
 		return
 	}
-	csvWriter := csv.NewWriter(bufio.NewWriter(csvFile))
-	csvWriter.Write([]string{
+	w := csv.NewWriter(bufio.NewWriter(csvFile))
+	w.Write([]string{
 		"id",                     // 0
 		"datetime",               // 1
 		"type",                   // 2
@@ -178,7 +178,7 @@ func main() {
 			log.Printf("Could not deserialize: '%s'", event)
 		}
 		fmt.Println(ev)
-		csvWriter.Write(ev.ToStringArray())
+		w.Write(ev.ToStringArray())
 	}
-	csvWriter.Flush()
+	w.Flush()
 }
