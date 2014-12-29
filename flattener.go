@@ -67,6 +67,18 @@ type DescendantPage struct {
 	Path    PagePath `xml:"path"`
 }
 
+type RootCopyPage struct {
+	XMLName xml.Name `xml:"root.copy.page"`
+	Id      string   `xml:"id,attr"`
+	Path    PagePath `xml:"path"`
+}
+
+type RootDeletePage struct {
+	XMLName xml.Name `xml:"root.delete.page"`
+	Id      string   `xml:"id,attr"`
+	Path    PagePath `xml:"path"`
+}
+
 type File struct {
 	XMLName  xml.Name `xml:"file"`
 	Id       string   `xml:"id,attr"`
@@ -108,6 +120,8 @@ type Event struct {
 	User               User           `xml:"user"`
 	CreateReasonDetail string         `xml:"create-reason-detail"`
 	DescendantPage     DescendantPage `xml:"descendant.page"`
+	RootCopyPage       RootCopyPage   `xml:"root.copy.page"`
+	RootDeletePage     RootDeletePage `xml:"root.delete.page"`
 }
 
 var header []string = []string{
@@ -146,6 +160,10 @@ var header []string = []string{
 	"createreasondetail",     // 32
 	"descendant.page.id",     // 33
 	"descendant.page.path",   // 34
+	"root.copy.page.id",      // 35
+	"root.copy.page.path",    // 36
+	"root.delete.page.id",    // 37
+	"root.delete.page.path",  // 38
 }
 
 func (ev Event) ToStringArray() []string {
@@ -201,6 +219,10 @@ func (ev Event) ToStringArray() []string {
 	values[32] = ev.CreateReasonDetail
 	values[33] = ev.DescendantPage.Id
 	values[34] = ev.DescendantPage.Path.Value
+	values[35] = ev.RootCopyPage.Id
+	values[36] = ev.RootCopyPage.Path.Value
+	values[37] = ev.RootDeletePage.Id
+	values[38] = ev.RootDeletePage.Path.Value
 
 	return values
 }
