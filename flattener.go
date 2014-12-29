@@ -74,6 +74,14 @@ type Data struct {
 	UriQuery  string   `xml:"_uri.query"`
 }
 
+type Diff struct {
+	XMLName    xml.Name `xml:"diff"`
+	Added      string `xml:"added"`
+	Removed    string `xml:"removed"`
+	Attributes string `xml:"attributes"`
+	Structural string `xml:"structural"`
+}
+
 type Event struct {
 	XMLName   xml.Name `xml:"event"`
 	Id        string   `xml:"id,attr"`
@@ -88,6 +96,8 @@ type Event struct {
 	Page      Page     `xml:"page"`
 	File      File     `xml:"file"`
 	Data      Data     `xml:"data"`
+	Diff      Diff     `xml:"diff"`
+	CreateReason string `xml:"create-reason"`
 }
 
 var header []string = []string{
@@ -116,6 +126,11 @@ var header []string = []string{
 	"data.urihost",           // 22
 	"data.urischeme",         // 23
 	"data.uriquery",          // 24
+	"diff.added",             // 25
+	"diff.removed",           // 26
+	"diff.attributes",        // 27
+	"diff.structural",        // 28
+	"createreason",           // 29
 }
 
 func (ev Event) ToStringArray() []string {
@@ -161,6 +176,12 @@ func (ev Event) ToStringArray() []string {
 	values[22] = ev.Data.UriHost
 	values[23] = ev.Data.UriScheme
 	values[24] = ev.Data.UriQuery
+	values[25] = ev.Diff.Added
+	values[26] = ev.Diff.Removed
+	values[27] = ev.Diff.Attributes
+	values[28] = ev.Diff.Structural
+	values[29] = ev.CreateReason
+	
 	return values
 }
 
@@ -200,7 +221,7 @@ func main() {
 			log.Printf("Could not deserialize: '%s'", event)
 			continue
 		}
-		fmt.Printf("Processing event: %s\n", ev.Id)
+		fmt.Println(ev)
 		w.Write(ev.ToStringArray())
 	}
 	w.Flush()
