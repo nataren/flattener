@@ -61,6 +61,18 @@ type Page struct {
 	Path    PagePath `xml:"path"`
 }
 
+type RootPage struct {
+	XMLName xml.Name `xml:"root.page"`
+	Id      string   `xml:"id,attr"`
+	Path    PagePath `xml:"path"`
+}
+
+type SourcePage struct {
+	XMLName xml.Name `xml:"source.page"`
+	Id      string   `xml:"id,attr"`
+	Path    PagePath `xml:"path"`
+}
+
 type DescendantPage struct {
 	XMLName xml.Name `xml:"descendant.page"`
 	Id      string   `xml:"id,attr"`
@@ -122,6 +134,8 @@ type Event struct {
 	DescendantPage     DescendantPage `xml:"descendant.page"`
 	RootCopyPage       RootCopyPage   `xml:"root.copy.page"`
 	RootDeletePage     RootDeletePage `xml:"root.delete.page"`
+	RootPage           RootPage       `xml:"root.page"`
+	SourcePage         SourcePage     `xml:"source.page"`
 }
 
 var header []string = []string{
@@ -164,6 +178,10 @@ var header []string = []string{
 	"root.copy.page.path",    // 36
 	"root.delete.page.id",    // 37
 	"root.delete.page.path",  // 38
+	"root.page.id",           // 39
+	"root.page.path",         // 40
+	"source.page.id",         // 41
+	"source.page.path",       // 42
 }
 
 func (ev Event) ToStringArray() []string {
@@ -223,6 +241,10 @@ func (ev Event) ToStringArray() []string {
 	values[36] = ev.RootCopyPage.Path.Value
 	values[37] = ev.RootDeletePage.Id
 	values[38] = ev.RootDeletePage.Path.Value
+	values[39] = ev.RootPage.Id
+	values[40] = ev.RootPage.Path.Value
+	values[41] = ev.SourcePage.Id
+	values[42] = ev.SourcePage.Path.Value
 
 	return values
 }
