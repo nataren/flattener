@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/csv"
 	"encoding/xml"
 	"fmt"
@@ -89,8 +90,50 @@ type Event struct {
 	Data      Data     `xml:"data"`
 }
 
+var header []string = []string{
+	"id",                     // 0
+	"datetime",               // 1
+	"type",                   // 2
+	"cascading",              // 3
+	"wikiid",                 // 4
+	"journaled",              // 5
+	"version",                // 6
+	"request.id",             // 7
+	"request.seq",            // 8
+	"request.count",          // 9
+	"request.signature",      // 10
+	"request.ip",             // 11
+	"request.sessionid",      // 12
+	"request.parameters",     // 13
+	"request.user.id",        // 14
+	"request.user.anonymous", // 15
+	"isimage",                // 16
+	"page.id",                // 17
+	"page.path",              // 18
+	"file.id",                // 19
+	"file.res-id",            // 20
+	"file.filename",          // 21
+	"data.urihost",           // 22
+	"data.urischeme",         // 23
+	"data.uriquery",          // 24
+}
+
 func (ev Event) ToStringArray() []string {
-	values := make([]string, 23)
+	values := make([]string, len(header))
+
+	// Group the optional parameters together as key1:value1;key2:value2...
+	var params bytes.Buffer
+	firstParam := true
+	for _, p := range ev.Request.Parameters {
+		if firstParam {
+			firstParam = false
+		} else {
+			params.WriteString(";")
+		}
+		params.WriteString(p.Name)
+		params.WriteString(":")
+		params.WriteString(p.Value)
+	}
 
 	// Populate the values
 	values[0] = ev.Id
@@ -106,7 +149,7 @@ func (ev Event) ToStringArray() []string {
 	values[10] = ev.Request.Signature.Value
 	values[11] = ev.Request.IP.Value
 	values[12] = ev.Request.SessionId.Value
-	values[13] = "parameters" // TODO
+	values[13] = params.String()
 	values[14] = ev.Request.User.Id
 	values[15] = ev.Request.User.Anonymous
 	values[16] = ev.IsImage
@@ -115,7 +158,9 @@ func (ev Event) ToStringArray() []string {
 	values[19] = ev.File.Id
 	values[20] = ev.File.ResId
 	values[21] = ev.File.Filename
-	values[22] = "data" // TODO
+	values[22] = ev.Data.UriHost
+	values[23] = ev.Data.UriScheme
+	values[24] = ev.Data.UriQuery
 	return values
 }
 
@@ -137,37 +182,14 @@ func main() {
 		return
 	}
 	w := csv.NewWriter(bufio.NewWriter(csvFile))
-	w.Write([]string{
-		"id",                     // 0
-		"datetime",               // 1
-		"type",                   // 2
-		"cascading",              // 3
-		"wikiid",                 // 4
-		"journaled",              // 5
-		"version",                // 6
-		"request.id",             // 7
-		"request.seq",            // 8
-		"request.count",          // 9
-		"request.signature",      // 10
-		"request.ip",             // 11
-		"request.sessionid",      // 12
-		"request.parameters",     // 13
-		"request.user.id",        // 14
-		"request.user.anonymous", // 15
-		"isImage",                // 16
-		"page.id",                // 17
-		"page.path",              // 18
-		"file.id",                // 19
-		"file.res-id",            // 20
-		"file.filename",          // 21
-		"data",                   // 22
-	})
+	w.Write(header)
 
 	// Read all the events
 	for {
 		event, err := r.ReadString('\x00')
 		if err != nil {
-			log.Printf("There was an error while reading from the events stream, '%s'", err)
+			log.Printf("There was an error while reading from the events stream, will exit, '%s'", err)
+			break
 		}
 		if event == "" {
 			break
@@ -176,8 +198,9 @@ func main() {
 		unmarshalErr := xml.Unmarshal([]byte(event), &ev)
 		if unmarshalErr != nil {
 			log.Printf("Could not deserialize: '%s'", event)
+			continue
 		}
-		fmt.Println(ev)
+		fmt.Printf("Processing event: %s\n", ev.Id)
 		w.Write(ev.ToStringArray())
 	}
 	w.Flush()
