@@ -29,6 +29,7 @@ type User struct {
 	XMLName   xml.Name `xml:"user"`
 	Id        string   `xml:"id,attr"`
 	Anonymous string   `xml:"anonymous,attr"`
+	Name      string   `xml:"name"`
 }
 
 type Parameter struct {
@@ -60,6 +61,12 @@ type Page struct {
 	Path    PagePath `xml:"path"`
 }
 
+type DescendantPage struct {
+	XMLName xml.Name `xml:"descendant.page"`
+	Id      string   `xml:"id,attr"`
+	Path    PagePath `xml:"path"`
+}
+
 type File struct {
 	XMLName  xml.Name `xml:"file"`
 	Id       string   `xml:"id,attr"`
@@ -76,28 +83,31 @@ type Data struct {
 
 type Diff struct {
 	XMLName    xml.Name `xml:"diff"`
-	Added      string `xml:"added"`
-	Removed    string `xml:"removed"`
-	Attributes string `xml:"attributes"`
-	Structural string `xml:"structural"`
+	Added      string   `xml:"added"`
+	Removed    string   `xml:"removed"`
+	Attributes string   `xml:"attributes"`
+	Structural string   `xml:"structural"`
 }
 
 type Event struct {
-	XMLName   xml.Name `xml:"event"`
-	Id        string   `xml:"id,attr"`
-	Datetime  string   `xml:"datetime,attr"`
-	Type      string   `xml:"type,attr"`
-	Cascading string   `xml:"cascading,attr"`
-	Wikiid    string   `xml:"wikiid,attr"`
-	Journaled string   `xml:"journaled,attr"`
-	Version   string   `xml:"version,attr"`
-	Request   Request  `xml:"request"`
-	IsImage   string   `xml:"isimage"`
-	Page      Page     `xml:"page"`
-	File      File     `xml:"file"`
-	Data      Data     `xml:"data"`
-	Diff      Diff     `xml:"diff"`
-	CreateReason string `xml:"create-reason"`
+	XMLName            xml.Name       `xml:"event"`
+	Id                 string         `xml:"id,attr"`
+	Datetime           string         `xml:"datetime,attr"`
+	Type               string         `xml:"type,attr"`
+	Cascading          string         `xml:"cascading,attr"`
+	Wikiid             string         `xml:"wikiid,attr"`
+	Journaled          string         `xml:"journaled,attr"`
+	Version            string         `xml:"version,attr"`
+	Request            Request        `xml:"request"`
+	IsImage            string         `xml:"isimage"`
+	Page               Page           `xml:"page"`
+	File               File           `xml:"file"`
+	Data               Data           `xml:"data"`
+	Diff               Diff           `xml:"diff"`
+	CreateReason       string         `xml:"create-reason"`
+	User               User           `xml:"user"`
+	CreateReasonDetail string         `xml:"create-reason-detail"`
+	DescendantPage     DescendantPage `xml:"descendant.page"`
 }
 
 var header []string = []string{
@@ -131,6 +141,11 @@ var header []string = []string{
 	"diff.attributes",        // 27
 	"diff.structural",        // 28
 	"createreason",           // 29
+	"user.id",                // 30
+	"user.name",              // 31
+	"createreasondetail",     // 32
+	"descendant.page.id",     // 33
+	"descendant.page.path",   // 34
 }
 
 func (ev Event) ToStringArray() []string {
@@ -181,7 +196,12 @@ func (ev Event) ToStringArray() []string {
 	values[27] = ev.Diff.Attributes
 	values[28] = ev.Diff.Structural
 	values[29] = ev.CreateReason
-	
+	values[30] = ev.User.Id
+	values[31] = ev.User.Name
+	values[32] = ev.CreateReasonDetail
+	values[33] = ev.DescendantPage.Id
+	values[34] = ev.DescendantPage.Path.Value
+
 	return values
 }
 
@@ -218,10 +238,11 @@ func main() {
 		ev := Event{}
 		unmarshalErr := xml.Unmarshal([]byte(event), &ev)
 		if unmarshalErr != nil {
-			log.Printf("Could not deserialize: '%s'", event)
+			log.Printf("Could not deserialize: '%s', '%s'", event, unmarshalErr)
 			continue
 		}
 		fmt.Println(ev)
+		fmt.Println()
 		w.Write(ev.ToStringArray())
 	}
 	w.Flush()
