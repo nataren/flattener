@@ -113,6 +113,18 @@ type Diff struct {
 	Structural string   `xml:"structural"`
 }
 
+type CommentContent struct {
+	XMLName xml.Name `xml:"content"`
+	Type    string   `xml:"type,attr"`
+	Value   string   `xml:",innerxml"`
+}
+
+type Comment struct {
+	XMLName xml.Name       `xml:"comment"`
+	Id      string         `xml:"id,attr"`
+	Content CommentContent `xml:"content"`
+}
+
 type Event struct {
 	XMLName            xml.Name       `xml:"event"`
 	Id                 string         `xml:"id,attr"`
@@ -141,6 +153,7 @@ type Event struct {
 	Revision           string         `xml:"revision"`
 	RevisionPrevious   string         `xml:"revision.previous"`
 	RevisionReverted   string         `xml:"revision.reverted"`
+	Comment            Comment        `xml:"comment"`
 }
 
 var header []string = []string{
@@ -192,6 +205,9 @@ var header []string = []string{
 	"revision",               // 45
 	"revision.previous",      // 46
 	"revision.reverted",      // 47
+	"comment.id",             // 48
+	"comment.content.type",   // 49
+	"comment.content",        // 50
 }
 
 func (ev Event) ToStringArray() []string {
@@ -260,6 +276,9 @@ func (ev Event) ToStringArray() []string {
 	values[45] = ev.Revision
 	values[46] = ev.RevisionPrevious
 	values[47] = ev.RevisionReverted
+	values[48] = ev.Comment.Id
+	values[49] = ev.Comment.Content.Type
+	values[50] = ev.Comment.Content.Value
 
 	return values
 }
