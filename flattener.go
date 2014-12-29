@@ -136,6 +136,11 @@ type Event struct {
 	RootDeletePage     RootDeletePage `xml:"root.delete.page"`
 	RootPage           RootPage       `xml:"root.page"`
 	SourcePage         SourcePage     `xml:"source.page"`
+	From               string         `xml:"from"`
+	To                 string         `xml:"to"`
+	Revision           string         `xml:"revision"`
+	RevisionPrevious   string         `xml:"revision.previous"`
+	RevisionReverted   string         `xml:"revision.reverted"`
 }
 
 var header []string = []string{
@@ -182,6 +187,11 @@ var header []string = []string{
 	"root.page.path",         // 40
 	"source.page.id",         // 41
 	"source.page.path",       // 42
+	"from",                   // 43
+	"to",                     // 44
+	"revision",               // 45
+	"revision.previous",      // 46
+	"revision.reverted",      // 47
 }
 
 func (ev Event) ToStringArray() []string {
@@ -245,6 +255,11 @@ func (ev Event) ToStringArray() []string {
 	values[40] = ev.RootPage.Path.Value
 	values[41] = ev.SourcePage.Id
 	values[42] = ev.SourcePage.Path.Value
+	values[43] = ev.From
+	values[44] = ev.To
+	values[45] = ev.Revision
+	values[46] = ev.RevisionPrevious
+	values[47] = ev.RevisionReverted
 
 	return values
 }
