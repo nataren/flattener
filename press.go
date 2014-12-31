@@ -172,6 +172,7 @@ type Event struct {
 	Property              Property       `xml:"property"`
 	RestrictionId         string         `xml:"restriction-id"`
 	PreviousRestrictionId string         `xml:"previous.restriction-id"`
+	Score                 string         `xml:"score"`
 }
 
 var header []string = []string{
@@ -232,6 +233,7 @@ var header []string = []string{
 	"property.name",           // 54
 	"restriction.id",          // 55
 	"previous.restriction.id", // 56
+	"score",                   // 57
 }
 
 func (ev Event) ToStringArray() []string {
@@ -337,7 +339,8 @@ func (ev Event) ToStringArray() []string {
 	values[54] = ev.Property.Name
 	values[55] = ev.RestrictionId
 	values[56] = ev.PreviousRestrictionId
-
+	values[57] = ev.Score
+	
 	return values
 }
 
