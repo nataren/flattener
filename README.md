@@ -1,21 +1,20 @@
 Dependencies
 ============
 
-1. Golang
+1. [Go](https://golang.org/ "Go Programming Language")
 
 
 How to run this
 ===============
 
-1. Copy the file site_1-events-20140206.log into the folder where ```press.go``` lives
-2. Using a bash terminal issue the following command: ```go run press.go```
+1. Using a bash terminal issue the following command: ```go run press.go --dir={PATH_TO_DIRECTORY_WITH_LOG_FILES}```
 
 Output
 ======
 
-1. You will find a newly created site_1-events-20140206.log.csv file
+1. You will find newly created {FILENAME}.log.csv files based on the original log files
 
-TODO
+Todo
 ====
 
 1. Add support for anything else that we are missing :-)
