@@ -18,7 +18,4 @@ Output
 TODO
 ====
 
-1. Add support for Rating events
-2. Add support for Grants events
-3. Add support for Restriction events
-4. Add support for anything else that we are missing :-)
+1. Add support for anything else that we are missing :-)
