@@ -5,10 +5,10 @@ import (
 	"bytes"
 	"encoding/csv"
 	"encoding/xml"
+	"flag"
 	"fmt"
 	"log"
 	"os"
-	"flag"
 )
 
 type Signature struct {
@@ -128,109 +128,109 @@ type Comment struct {
 
 type Tag struct {
 	XMLName xml.Name `xml:"tag"`
-	Name string `xml:"name"`
-	Type string `xml:"type"`
+	Name    string   `xml:"name"`
+	Type    string   `xml:"type"`
 }
 
 type Property struct {
 	XMLName xml.Name `xml:"property"`
-	Id string `xml:"id"`
-	Name string `xml:"name"`
+	Id      string   `xml:"id"`
+	Name    string   `xml:"name"`
 }
 
 type Event struct {
-	XMLName            xml.Name       `xml:"event"`
-	Id                 string         `xml:"id,attr"`
-	Datetime           string         `xml:"datetime,attr"`
-	Type               string         `xml:"type,attr"`
-	Cascading          string         `xml:"cascading,attr"`
-	Wikiid             string         `xml:"wikiid,attr"`
-	Journaled          string         `xml:"journaled,attr"`
-	Version            string         `xml:"version,attr"`
-	Request            Request        `xml:"request"`
-	IsImage            string         `xml:"isimage"`
-	Page               Page           `xml:"page"`
-	File               File           `xml:"file"`
-	Data               Data           `xml:"data"`
-	Diff               Diff           `xml:"diff"`
-	CreateReason       string         `xml:"create-reason"`
-	User               User           `xml:"user"`
-	CreateReasonDetail string         `xml:"create-reason-detail"`
-	DescendantPage     DescendantPage `xml:"descendant.page"`
-	RootCopyPage       RootCopyPage   `xml:"root.copy.page"`
-	RootDeletePage     RootDeletePage `xml:"root.delete.page"`
-	RootPage           RootPage       `xml:"root.page"`
-	SourcePage         SourcePage     `xml:"source.page"`
-	From               string         `xml:"from"`
-	To                 string         `xml:"to"`
-	Revision           string         `xml:"revision"`
-	RevisionPrevious   string         `xml:"revision.previous"`
-	RevisionReverted   string         `xml:"revision.reverted"`
-	Comment            Comment        `xml:"comment"`
-	TagsAdded          []Tag          `xml:"tags-added>tag"`
-	TagsRemoved        []Tag          `xml:"tags-removed>tag"`
-	Property           Property       `xml:"property"`
-	RestrictionId      string         `xml:"restriction-id"`
-	PreviousRestrictionId string      `xml:"previous.restriction-id"`
+	XMLName               xml.Name       `xml:"event"`
+	Id                    string         `xml:"id,attr"`
+	Datetime              string         `xml:"datetime,attr"`
+	Type                  string         `xml:"type,attr"`
+	Cascading             string         `xml:"cascading,attr"`
+	Wikiid                string         `xml:"wikiid,attr"`
+	Journaled             string         `xml:"journaled,attr"`
+	Version               string         `xml:"version,attr"`
+	Request               Request        `xml:"request"`
+	IsImage               string         `xml:"isimage"`
+	Page                  Page           `xml:"page"`
+	File                  File           `xml:"file"`
+	Data                  Data           `xml:"data"`
+	Diff                  Diff           `xml:"diff"`
+	CreateReason          string         `xml:"create-reason"`
+	User                  User           `xml:"user"`
+	CreateReasonDetail    string         `xml:"create-reason-detail"`
+	DescendantPage        DescendantPage `xml:"descendant.page"`
+	RootCopyPage          RootCopyPage   `xml:"root.copy.page"`
+	RootDeletePage        RootDeletePage `xml:"root.delete.page"`
+	RootPage              RootPage       `xml:"root.page"`
+	SourcePage            SourcePage     `xml:"source.page"`
+	From                  string         `xml:"from"`
+	To                    string         `xml:"to"`
+	Revision              string         `xml:"revision"`
+	RevisionPrevious      string         `xml:"revision.previous"`
+	RevisionReverted      string         `xml:"revision.reverted"`
+	Comment               Comment        `xml:"comment"`
+	TagsAdded             []Tag          `xml:"tags-added>tag"`
+	TagsRemoved           []Tag          `xml:"tags-removed>tag"`
+	Property              Property       `xml:"property"`
+	RestrictionId         string         `xml:"restriction-id"`
+	PreviousRestrictionId string         `xml:"previous.restriction-id"`
 }
 
 var header []string = []string{
-	"id",                     // 0
-	"datetime",               // 1
-	"type",                   // 2
-	"cascading",              // 3
-	"wikiid",                 // 4
-	"journaled",              // 5
-	"version",                // 6
-	"request.id",             // 7
-	"request.seq",            // 8
-	"request.count",          // 9
-	"request.signature",      // 10
-	"request.ip",             // 11
-	"request.sessionid",      // 12
-	"request.parameters",     // 13
-	"request.user.id",        // 14
-	"request.user.anonymous", // 15
-	"isimage",                // 16
-	"page.id",                // 17
-	"page.path",              // 18
-	"file.id",                // 19
-	"file.res-id",            // 20
-	"file.filename",          // 21
-	"data.urihost",           // 22
-	"data.urischeme",         // 23
-	"data.uriquery",          // 24
-	"diff.added",             // 25
-	"diff.removed",           // 26
-	"diff.attributes",        // 27
-	"diff.structural",        // 28
-	"createreason",           // 29
-	"user.id",                // 30
-	"user.name",              // 31
-	"createreasondetail",     // 32
-	"descendant.page.id",     // 33
-	"descendant.page.path",   // 34
-	"root.copy.page.id",      // 35
-	"root.copy.page.path",    // 36
-	"root.delete.page.id",    // 37
-	"root.delete.page.path",  // 38
-	"root.page.id",           // 39
-	"root.page.path",         // 40
-	"source.page.id",         // 41
-	"source.page.path",       // 42
-	"from",                   // 43
-	"to",                     // 44
-	"revision",               // 45
-	"revision.previous",      // 46
-	"revision.reverted",      // 47
-	"comment.id",             // 48
-	"comment.content.type",   // 49
-	"comment.content",        // 50
-	"tags.added",             // 51
-	"tags.removed",           // 52
-	"property.id",            // 53
-	"property.name",          // 54
-	"restriction.id",         // 55
+	"id",                      // 0
+	"datetime",                // 1
+	"type",                    // 2
+	"cascading",               // 3
+	"wikiid",                  // 4
+	"journaled",               // 5
+	"version",                 // 6
+	"request.id",              // 7
+	"request.seq",             // 8
+	"request.count",           // 9
+	"request.signature",       // 10
+	"request.ip",              // 11
+	"request.sessionid",       // 12
+	"request.parameters",      // 13
+	"request.user.id",         // 14
+	"request.user.anonymous",  // 15
+	"isimage",                 // 16
+	"page.id",                 // 17
+	"page.path",               // 18
+	"file.id",                 // 19
+	"file.res-id",             // 20
+	"file.filename",           // 21
+	"data.urihost",            // 22
+	"data.urischeme",          // 23
+	"data.uriquery",           // 24
+	"diff.added",              // 25
+	"diff.removed",            // 26
+	"diff.attributes",         // 27
+	"diff.structural",         // 28
+	"createreason",            // 29
+	"user.id",                 // 30
+	"user.name",               // 31
+	"createreasondetail",      // 32
+	"descendant.page.id",      // 33
+	"descendant.page.path",    // 34
+	"root.copy.page.id",       // 35
+	"root.copy.page.path",     // 36
+	"root.delete.page.id",     // 37
+	"root.delete.page.path",   // 38
+	"root.page.id",            // 39
+	"root.page.path",          // 40
+	"source.page.id",          // 41
+	"source.page.path",        // 42
+	"from",                    // 43
+	"to",                      // 44
+	"revision",                // 45
+	"revision.previous",       // 46
+	"revision.reverted",       // 47
+	"comment.id",              // 48
+	"comment.content.type",    // 49
+	"comment.content",         // 50
+	"tags.added",              // 51
+	"tags.removed",            // 52
+	"property.id",             // 53
+	"property.name",           // 54
+	"restriction.id",          // 55
 	"previous.restriction.id", // 56
 }
 
@@ -264,7 +264,6 @@ func (ev Event) ToStringArray() []string {
 		tagsAdded.WriteString("^")
 		tagsAdded.WriteString(tagAdded.Type)
 	}
-
 
 	// Tags removed
 	var tagsRemoved bytes.Buffer
@@ -338,7 +337,7 @@ func (ev Event) ToStringArray() []string {
 	values[54] = ev.Property.Name
 	values[55] = ev.RestrictionId
 	values[56] = ev.PreviousRestrictionId
-	
+
 	return values
 }
 
