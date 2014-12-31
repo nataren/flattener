@@ -17,7 +17,7 @@ Output
 Todo
 ====
 
-1. Add support for anything else that we are missing :-)
+1. Add support for anything else that we are missing so we can :shipit:
 
 Notes
 =====
