@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"flag"
 )
 
 type Signature struct {
@@ -125,6 +126,12 @@ type Comment struct {
 	Content CommentContent `xml:"content"`
 }
 
+type Tag struct {
+	XMLName xml.Name `xml:"tag"`
+	Name string `xml:"name"`
+	Type string `xml:"type"`
+}
+
 type Event struct {
 	XMLName            xml.Name       `xml:"event"`
 	Id                 string         `xml:"id,attr"`
@@ -154,6 +161,8 @@ type Event struct {
 	RevisionPrevious   string         `xml:"revision.previous"`
 	RevisionReverted   string         `xml:"revision.reverted"`
 	Comment            Comment        `xml:"comment"`
+	TagsAdded          []Tag          `xml:"tags-added>tag"`
+	TagsRemoved        []Tag          `xml:"tags-removed>tag"`
 }
 
 var header []string = []string{
@@ -208,6 +217,8 @@ var header []string = []string{
 	"comment.id",             // 48
 	"comment.content.type",   // 49
 	"comment.content",        // 50
+	"tags.added",             // 51
+	"tags.removed",           // 52
 }
 
 func (ev Event) ToStringArray() []string {
@@ -225,6 +236,35 @@ func (ev Event) ToStringArray() []string {
 		params.WriteString(p.Name)
 		params.WriteString(":")
 		params.WriteString(p.Value)
+	}
+
+	// Tags added
+	var tagsAdded bytes.Buffer
+	firstTag := true
+	for _, tagAdded := range ev.TagsAdded {
+		if firstTag {
+			firstTag = false
+		} else {
+			tagsAdded.WriteString(";")
+		}
+		tagsAdded.WriteString(tagAdded.Name)
+		tagsAdded.WriteString("^")
+		tagsAdded.WriteString(tagAdded.Type)
+	}
+
+
+	// Tags removed
+	var tagsRemoved bytes.Buffer
+	firstRemovedTag := true
+	for _, tagRemoved := range ev.TagsRemoved {
+		if firstRemovedTag {
+			firstRemovedTag = false
+		} else {
+			tagsRemoved.WriteString(";")
+		}
+		tagsRemoved.WriteString(tagRemoved.Name)
+		tagsRemoved.WriteString("^")
+		tagsRemoved.WriteString(tagRemoved.Type)
 	}
 
 	// Populate the values
@@ -279,11 +319,36 @@ func (ev Event) ToStringArray() []string {
 	values[48] = ev.Comment.Id
 	values[49] = ev.Comment.Content.Type
 	values[50] = ev.Comment.Content.Value
-
+	values[51] = tagsAdded.String()
+	values[52] = tagsRemoved.String()
+	
 	return values
 }
 
 func main() {
+
+	// Setup flags
+	var dirname string
+	flag.StringVar(&dirname, "dir", "", "The path to the folder where the log files live")
+	flag.Parse()
+
+	// Validate flags
+	if dirname == "" {
+		log.Println("There's nothing to do, will exit")
+		return
+	}
+	dir, err := os.Open(dirname)
+	if err != nil {
+		log.Printf("Could not read directory '%s': '%s'", dirname, err)
+		return
+	}
+	dirinfo, err := dir.Readdir(-1)
+	if err != nil {
+		log.Printf("There was a problem reading the contents of the directory '%s': '%s'", dirname, err)
+	}
+	for _, fi := range dirinfo {
+		log.Println(fi.Name())
+	}
 
 	// Open file
 	events, err := os.Open("site_1-events-20140206.log")
