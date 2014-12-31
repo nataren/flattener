@@ -132,6 +132,12 @@ type Tag struct {
 	Type string `xml:"type"`
 }
 
+type Property struct {
+	XMLName xml.Name `xml:"property"`
+	Id string `xml:"id"`
+	Name string `xml:"name"`
+}
+
 type Event struct {
 	XMLName            xml.Name       `xml:"event"`
 	Id                 string         `xml:"id,attr"`
@@ -163,6 +169,7 @@ type Event struct {
 	Comment            Comment        `xml:"comment"`
 	TagsAdded          []Tag          `xml:"tags-added>tag"`
 	TagsRemoved        []Tag          `xml:"tags-removed>tag"`
+	Property           Property       `xml:"property"`
 }
 
 var header []string = []string{
@@ -219,6 +226,8 @@ var header []string = []string{
 	"comment.content",        // 50
 	"tags.added",             // 51
 	"tags.removed",           // 52
+	"property.id",            // 53
+	"property.name",          // 54
 }
 
 func (ev Event) ToStringArray() []string {
