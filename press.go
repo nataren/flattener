@@ -170,6 +170,8 @@ type Event struct {
 	TagsAdded          []Tag          `xml:"tags-added>tag"`
 	TagsRemoved        []Tag          `xml:"tags-removed>tag"`
 	Property           Property       `xml:"property"`
+	RestrictionId      string         `xml:"restriction-id"`
+	PreviousRestrictionId string      `xml:"previous.restriction-id"`
 }
 
 var header []string = []string{
@@ -228,6 +230,8 @@ var header []string = []string{
 	"tags.removed",           // 52
 	"property.id",            // 53
 	"property.name",          // 54
+	"restriction.id",         // 55
+	"previous.restriction.id", // 56
 }
 
 func (ev Event) ToStringArray() []string {
@@ -330,6 +334,10 @@ func (ev Event) ToStringArray() []string {
 	values[50] = ev.Comment.Content.Value
 	values[51] = tagsAdded.String()
 	values[52] = tagsRemoved.String()
+	values[53] = ev.Property.Id
+	values[54] = ev.Property.Name
+	values[55] = ev.RestrictionId
+	values[56] = ev.PreviousRestrictionId
 	
 	return values
 }
