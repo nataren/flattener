@@ -12,7 +12,7 @@ How to run this
 Output
 ======
 
-1. You will find newly created {FILENAME}.log.csv files based on the original log files
+1. You will find newly created ```{FILENAME}.log.csv``` files based on the original log files
 
 Todo
 ====
