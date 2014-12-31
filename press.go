@@ -138,6 +138,19 @@ type Property struct {
 	Name    string   `xml:"name"`
 }
 
+type Role struct {
+	XMLName xml.Name `xml:"role"`
+	Id      string   `xml:"id,attr"`
+}
+
+type Grant struct {
+	XMLName xml.Name `xml:"grant"`
+	Id      string   `xml:"id"`
+	Type    string   `xml:"type"`
+	Role    Role     `xml:"role"`
+	User    User     `xml:"user"`
+}
+
 type Event struct {
 	XMLName               xml.Name       `xml:"event"`
 	Id                    string         `xml:"id,attr"`
@@ -173,6 +186,7 @@ type Event struct {
 	RestrictionId         string         `xml:"restriction-id"`
 	PreviousRestrictionId string         `xml:"previous.restriction-id"`
 	Score                 string         `xml:"score"`
+	Grant                 Grant          `xml:"grant"`
 }
 
 var header []string = []string{
@@ -234,6 +248,10 @@ var header []string = []string{
 	"restriction.id",          // 55
 	"previous.restriction.id", // 56
 	"score",                   // 57
+	"grant.id",                // 58
+	"grant.type",              // 59
+	"grant.role.id",           // 60
+	"grant.user.id",           // 61
 }
 
 func (ev Event) ToStringArray() []string {
@@ -340,7 +358,11 @@ func (ev Event) ToStringArray() []string {
 	values[55] = ev.RestrictionId
 	values[56] = ev.PreviousRestrictionId
 	values[57] = ev.Score
-	
+	values[58] = ev.Grant.Id
+	values[59] = ev.Grant.Type
+	values[60] = ev.Grant.Role.Id
+	values[61] = ev.Grant.User.Id
+
 	return values
 }
 
