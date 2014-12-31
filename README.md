@@ -17,7 +17,7 @@ Output
 Todo
 ====
 
-1. Add support for anything else that we are missing so we can :shipit:
+1. Add support for anything else that we are missing so we can :shipit: Adding some logging for when elements do not get deserialized because we have not included them in the types would help with identifying missing pieces of data.
 2. Add a --output flag that will indicate the directory where the newly created files will be stored.
 3. Add some ```goroutines``` to the processing pipeline to process multiple files at a time.
 
