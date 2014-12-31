@@ -6,9 +6,9 @@ import (
 	"encoding/csv"
 	"encoding/xml"
 	"flag"
-	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 type Signature struct {
@@ -388,46 +388,49 @@ func main() {
 		log.Printf("There was a problem reading the contents of the directory '%s': '%s'", dirname, err)
 	}
 	for _, fi := range dirinfo {
-		log.Println(fi.Name())
-	}
-
-	// Open file
-	events, err := os.Open("site_1-events-20140206.log")
-	if err != nil {
-		log.Fatal("Error opening file 'site_1-events-20140206.log")
-		return
-	}
-	defer events.Close()
-	r := bufio.NewReader(events)
-
-	// Create new file
-	csvFile, err := os.Create("site_1-events-20140206.log.csv")
-	if err != nil {
-		log.Fatal("Error creating file")
-		return
-	}
-	w := csv.NewWriter(bufio.NewWriter(csvFile))
-	w.Write(header)
-
-	// Read all the events
-	for {
-		event, err := r.ReadString('\x00')
-		if err != nil {
-			log.Printf("There was an error while reading from the events stream, will exit, '%s'", err)
-			break
-		}
-		if event == "" {
-			break
-		}
-		ev := Event{}
-		unmarshalErr := xml.Unmarshal([]byte(event), &ev)
-		if unmarshalErr != nil {
-			log.Printf("Could not deserialize: '%s', '%s'", event, unmarshalErr)
+		log.Printf("Currently processing file '%s'", fi.Name())
+		filename := fi.Name()
+		if !strings.HasSuffix(filename, ".log") {
+			log.Printf("Will skip file '%s'", filename)
 			continue
 		}
-		fmt.Println(ev)
-		fmt.Println()
-		w.Write(ev.ToStringArray())
+
+		// Open file
+		events, err := os.Open(filename)
+		if err != nil {
+			log.Fatal("Error opening file '%s'", filename)
+			continue
+		}
+		defer events.Close()
+		r := bufio.NewReader(events)
+
+		// Create new file
+		csvFile, err := os.Create(filename + ".csv")
+		if err != nil {
+			log.Fatal("Error creating file")
+			continue
+		}
+		w := csv.NewWriter(bufio.NewWriter(csvFile))
+		w.Write(header)
+
+		// Read all the events
+		for {
+			event, err := r.ReadString('\x00')
+			if err != nil {
+				log.Printf("There was an error while reading from the events stream, will exit, '%s'", err)
+				break
+			}
+			if event == "" {
+				break
+			}
+			ev := Event{}
+			unmarshalErr := xml.Unmarshal([]byte(event), &ev)
+			if unmarshalErr != nil {
+				log.Printf("Could not deserialize: '%s', '%s', '%s'", filename, event, unmarshalErr)
+				continue
+			}
+			w.Write(ev.ToStringArray())
+		}
+		w.Flush()
 	}
-	w.Flush()
 }
