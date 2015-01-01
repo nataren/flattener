@@ -216,7 +216,7 @@ var header []string = []string{
 	"page.id",                 // 17
 	"page.path",               // 18
 	"file.id",                 // 19
-	"file.res-id",             // 20
+	"file.resid",              // 20
 	"file.filename",           // 21
 	"data.urihost",            // 22
 	"data.urischeme",          // 23
