@@ -187,6 +187,7 @@ type Event struct {
 	PreviousRestrictionId string         `xml:"previous.restriction-id"`
 	Score                 string         `xml:"score"`
 	Grant                 Grant          `xml:"grant"`
+	Any                   string         `xml:",any"`
 }
 
 var header []string = []string{
@@ -252,6 +253,7 @@ var header []string = []string{
 	"grant.type",              // 59
 	"grant.role.id",           // 60
 	"grant.user.id",           // 61
+	"any",                     // 62
 }
 
 func (ev Event) ToStringArray() []string {
@@ -362,7 +364,7 @@ func (ev Event) ToStringArray() []string {
 	values[59] = ev.Grant.Type
 	values[60] = ev.Grant.Role.Id
 	values[61] = ev.Grant.User.Id
-
+	values[62] = ev.Any
 	return values
 }
 
