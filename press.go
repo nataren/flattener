@@ -31,6 +31,7 @@ type User struct {
 	Id        string   `xml:"id,attr"`
 	Anonymous string   `xml:"anonymous,attr"`
 	Name      string   `xml:"name"`
+	Username  string   `xml:"username,attr"`
 }
 
 type Parameter struct {
@@ -188,6 +189,10 @@ type Event struct {
 	Score                 string         `xml:"score"`
 	Grant                 Grant          `xml:"grant"`
 	Any                   string         `xml:",any"`
+	AuthMethodPassword    string         `xml:"authmethod-password"`
+	AuthMethodApikey      string         `xml:"authmethod-apikey"`
+	Origin                string         `xml:"origin"`
+	ReasonType            string         `xml:"reason-type"`
 }
 
 var header []string = []string{
@@ -254,6 +259,11 @@ var header []string = []string{
 	"grant.role.id",           // 60
 	"grant.user.id",           // 61
 	"any",                     // 62
+	"user.username",           // 63
+	"authmethodpassword",      // 64
+	"authmethodapikey",        // 65
+	"origin",                  // 66
+	"reasontype",              // 67
 }
 
 func (ev Event) ToStringArray() []string {
@@ -365,6 +375,11 @@ func (ev Event) ToStringArray() []string {
 	values[60] = ev.Grant.Role.Id
 	values[61] = ev.Grant.User.Id
 	values[62] = ev.Any
+	values[63] = ev.User.Username
+	values[64] = ev.AuthMethodPassword
+	values[65] = ev.AuthMethodApikey
+	values[66] = ev.Origin
+	values[67] = ev.ReasonType
 	return values
 }
 
