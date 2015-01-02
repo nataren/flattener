@@ -405,8 +405,8 @@ func main() {
 		log.Printf("There was a problem reading the contents of the directory '%s': '%s'", dirname, err)
 	}
 	for _, fi := range dirinfo {
-		log.Printf("Currently processing file '%s'", fi.Name())
 		filename := fi.Name()
+		log.Printf("Currently processing file '%s'", filename)
 		if !strings.HasSuffix(filename, ".log") {
 			log.Printf("Will skip file '%s'", filename)
 			continue
