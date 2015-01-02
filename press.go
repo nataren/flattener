@@ -6,6 +6,7 @@ import (
 	"encoding/csv"
 	"encoding/xml"
 	"flag"
+	"io"
 	"log"
 	"os"
 	"strings"
@@ -434,6 +435,10 @@ func main() {
 		for {
 			event, err := r.ReadString('\x00')
 			if err != nil {
+				if err == io.EOF {
+					log.Printf("Finished processing '%s'", filename)
+					break
+				}
 				log.Printf("There was an error while reading from the events stream, will exit, '%s'", err)
 				break
 			}
