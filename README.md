@@ -7,7 +7,7 @@ Dependencies
 How to run this
 ===============
 
-1. Using a bash terminal issue the following command: ```go run press.go --dir={PATH_TO_DIRECTORY_WITH_LOG_FILES}```
+1. Using a bash terminal either: ```go run press.go --dir={PATH_TO_DIRECTORY_WITH_LOG_FILES}``` or ```./bin/press --dir={PATH_TO_DIRECTORY_WITH_LOG_FILES}```
 
 Output
 ======
