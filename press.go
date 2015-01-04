@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"runtime/pprof"
 	"strings"
 )
 
@@ -411,8 +412,10 @@ func main() {
 	// Setup flags
 	var dirname string
 	var debug bool
+	var cpuprofile string
 	flag.StringVar(&dirname, "dir", "", "The path to the folder where the log files live")
 	flag.BoolVar(&debug, "debug", false, "Enable debug messages, in particular it shows which item has been scheduled for processing")
+	flag.StringVar(&cpuprofile, "cpuprofile", "", "Write cpu profile to file")
 	flag.Parse()
 
 	// Validate flags
@@ -429,6 +432,18 @@ func main() {
 	if err != nil {
 		log.Printf("There was a problem reading the contents of the directory '%s': '%s'", dirname, err)
 	}
+
+	// Profiling settings
+	if cpuprofile != "" {
+        f, err := os.Create(cpuprofile)
+        if err != nil {
+            log.Fatal(err)
+        }
+        pprof.StartCPUProfile(f)
+        defer pprof.StopCPUProfile()
+	}
+	
+	// Parallelism settings
 	cpus := runtime.NumCPU()
 	runtime.GOMAXPROCS(cpus)
 	numberOfProcessors := len(dirinfo)
