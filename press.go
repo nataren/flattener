@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"runtime"
 	"strings"
 )
 
@@ -426,57 +427,72 @@ func main() {
 	if err != nil {
 		log.Printf("There was a problem reading the contents of the directory '%s': '%s'", dirname, err)
 	}
+	cpus := runtime.NumCPU()
+	runtime.GOMAXPROCS(cpus)
+	numberOfProcessors := len(dirinfo)
+	finished := make(chan bool, numberOfProcessors)
 	for _, fi := range dirinfo {
 		filename := fi.Name()
-		log.Printf("Currently processing file '%s'", filename)
-		if !strings.HasSuffix(filename, ".log") {
-			log.Printf("Will skip file '%s'", filename)
-			continue
-		}
+		go func() {
+			log.Printf("Currently processing file '%s'", filename)
+			if !strings.HasSuffix(filename, ".log") {
+				log.Printf("Will skip file '%s'", filename)
+				finished <- true
+				return
+			}
 
-		// Open file
-		events, err := os.Open(filename)
-		if err != nil {
-			log.Fatal("Error opening file '%s'", filename)
-			continue
-		}
-		defer events.Close()
-		r := bufio.NewReader(events)
-
-		// Create new file
-		csvFile, err := os.Create(filename + ".csv")
-		if err != nil {
-			log.Fatal("Error creating file")
-			continue
-		}
-		w := csv.NewWriter(bufio.NewWriter(csvFile))
-		w.Write(header)
-
-		// Read all the events
-		for {
-			event, err := r.ReadString('\x00')
+			// Open file
+			events, err := os.Open(filename)
 			if err != nil {
-				if err == io.EOF {
-					log.Printf("Finished processing '%s'", filename)
+				log.Printf("Error opening file '%s'", filename)
+				finished <- true
+				return
+			}
+			defer events.Close()
+			r := bufio.NewReader(events)
+
+			// Create new file
+			csvFile, err := os.Create(filename + ".csv")
+			if err != nil {
+				log.Printf("Error creating csv file for '%s'", filename)
+				finished <- true
+				return
+			}
+			w := csv.NewWriter(bufio.NewWriter(csvFile))
+			w.Write(header)
+
+			// Read all the events
+			for {
+				event, err := r.ReadString('\x00')
+				if err != nil {
+					if err == io.EOF {
+						log.Printf("Finished processing '%s'", filename)
+						break
+					}
+					log.Printf("There was an error while reading from the events stream, will exit, '%s'", err)
 					break
 				}
-				log.Printf("There was an error while reading from the events stream, will exit, '%s'", err)
-				break
+				if event == "" {
+					break
+				}
+				ev := Event{}
+				unmarshalErr := xml.Unmarshal([]byte(event), &ev)
+				if unmarshalErr != nil {
+					log.Printf("Could not deserialize: '%s', '%s', '%s'", filename, event, unmarshalErr)
+					continue
+				}
+				if ev.Any != "" {
+					log.Printf("'%s': The event '%s' was found not having all its members deserialized. Any = '%s'", event, filename, ev.Any)
+				}
+				w.Write(ev.ToStringArray())
 			}
-			if event == "" {
-				break
-			}
-			ev := Event{}
-			unmarshalErr := xml.Unmarshal([]byte(event), &ev)
-			if unmarshalErr != nil {
-				log.Printf("Could not deserialize: '%s', '%s', '%s'", filename, event, unmarshalErr)
-				continue
-			}
-			if ev.Any != "" {
-				log.Printf("'%s': The event '%s' was found not having all its members deserialized. Any = '%s'", event, filename, ev.Any)
-			}
-			w.Write(ev.ToStringArray())
-		}
-		w.Flush()
+			w.Flush()
+			finished <- true
+			return
+		}()
 	}
+	for i := 0; i < numberOfProcessors; i++ {
+		<-finished
+	}
+	log.Printf("Used %d CPUs", cpus)
 }
