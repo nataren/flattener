@@ -194,6 +194,8 @@ type Event struct {
 	AuthMethodApikey      string         `xml:"authmethod-apikey"`
 	Origin                string         `xml:"origin"`
 	ReasonType            string         `xml:"reason-type"`
+	DisplayNamePrevious   string         `xml:"displayname.previous"`
+	DisplayNameCurrent    string         `xml:"displayname.current"`
 }
 
 var header []string = []string{
@@ -265,6 +267,8 @@ var header []string = []string{
 	"authmethodapikey",        // 65
 	"origin",                  // 66
 	"reasontype",              // 67
+	"displayname.previous",    // 68
+	"displayname.current",     // 69
 }
 
 func (ev Event) ToStringArray() []string {
@@ -381,6 +385,8 @@ func (ev Event) ToStringArray() []string {
 	values[65] = ev.AuthMethodApikey
 	values[66] = ev.Origin
 	values[67] = ev.ReasonType
+	values[68] = ev.DisplayNamePrevious
+	values[69] = ev.DisplayNameCurrent
 	return values
 }
 
