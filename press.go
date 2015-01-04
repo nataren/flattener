@@ -198,6 +198,7 @@ type Event struct {
 	DisplayNameCurrent    string         `xml:"displayname.current"`
 	ContentTypePrevious   string         `xml:"contenttype.previous"`
 	ContentTypeCurrent    string         `xml:"contenttype.current"`
+	ChangeComment         string         `xml:"change-comment"`
 }
 
 var header []string = []string{
@@ -273,6 +274,7 @@ var header []string = []string{
 	"displayname.current",     // 69
 	"contenttype.previous",    // 70
 	"contenttype.current",     // 71
+	"change-comment",          // 72
 }
 
 func (ev Event) ToStringArray() []string {
@@ -393,6 +395,7 @@ func (ev Event) ToStringArray() []string {
 	values[69] = ev.DisplayNameCurrent
 	values[70] = ev.ContentTypePrevious
 	values[71] = ev.ContentTypeCurrent
+	values[72] = ev.ChangeComment
 	return values
 }
 
