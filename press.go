@@ -199,6 +199,8 @@ type Event struct {
 	ContentTypePrevious   string         `xml:"contenttype.previous"`
 	ContentTypeCurrent    string         `xml:"contenttype.current"`
 	ChangeComment         string         `xml:"change-comment"`
+	TitleSegmentPrevious  string         `xml:"titlesegment.previous"`
+	TitleSegmentCurrent   string         `xml:"titlesegment.current"`
 }
 
 var header []string = []string{
@@ -275,6 +277,8 @@ var header []string = []string{
 	"contenttype.previous",    // 70
 	"contenttype.current",     // 71
 	"change-comment",          // 72
+	"titlesegment.previous",   // 73
+	"titlesegment.current",    // 74
 }
 
 func (ev Event) ToStringArray() []string {
@@ -396,6 +400,8 @@ func (ev Event) ToStringArray() []string {
 	values[70] = ev.ContentTypePrevious
 	values[71] = ev.ContentTypeCurrent
 	values[72] = ev.ChangeComment
+	values[73] = ev.TitleSegmentPrevious
+	values[74] = ev.TitleSegmentCurrent
 	return values
 }
 
@@ -465,6 +471,9 @@ func main() {
 			if unmarshalErr != nil {
 				log.Printf("Could not deserialize: '%s', '%s', '%s'", filename, event, unmarshalErr)
 				continue
+			}
+			if ev.Any != "" {
+				log.Printf("'%s': The event '%s' was found not having all its members deserialized. Any = '%s'", event, filename, ev.Any)
 			}
 			w.Write(ev.ToStringArray())
 		}
