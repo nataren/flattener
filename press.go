@@ -410,7 +410,9 @@ func main() {
 
 	// Setup flags
 	var dirname string
+	var debug bool
 	flag.StringVar(&dirname, "dir", "", "The path to the folder where the log files live")
+	flag.BoolVar(&debug, "debug", false, "Enable debug messages, in particular it shows which item has been scheduled for processing")
 	flag.Parse()
 
 	// Validate flags
@@ -434,7 +436,9 @@ func main() {
 	for _, fi := range dirinfo {
 		filename := fi.Name()
 		go func() {
-			log.Printf("Currently processing file '%s'", filename)
+			if debug {
+				log.Printf("Currently processing file '%s'", filename)
+			}
 			if !strings.HasSuffix(filename, ".log") {
 				log.Printf("Will skip file '%s'", filename)
 				finished <- true
@@ -466,7 +470,9 @@ func main() {
 				event, err := r.ReadString('\x00')
 				if err != nil {
 					if err == io.EOF {
-						log.Printf("Finished processing '%s'", filename)
+						if debug {
+							log.Printf("Finished processing '%s'", filename)
+						}
 						break
 					}
 					log.Printf("There was an error while reading from the events stream, will exit, '%s'", err)
