@@ -17,8 +17,8 @@ Output
 Todo
 ====
 
-1. Add some ```goroutines``` to the processing pipeline to process multiple files at a time.
-2. Add a --output flag that will indicate the directory where the newly created files will be stored.
+1. Add a --output flag that will indicate the directory where the newly created files will be stored.
+2. Add a --debug flag to enable logging which file is being processed.
     
 Notes
 =====
