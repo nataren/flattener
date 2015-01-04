@@ -196,6 +196,8 @@ type Event struct {
 	ReasonType            string         `xml:"reason-type"`
 	DisplayNamePrevious   string         `xml:"displayname.previous"`
 	DisplayNameCurrent    string         `xml:"displayname.current"`
+	ContentTypePrevious   string         `xml:"contenttype.previous"`
+	ContentTypeCurrent    string         `xml:"contenttype.current"`
 }
 
 var header []string = []string{
@@ -269,6 +271,8 @@ var header []string = []string{
 	"reasontype",              // 67
 	"displayname.previous",    // 68
 	"displayname.current",     // 69
+	"contenttype.previous",    // 70
+	"contenttype.current",     // 71
 }
 
 func (ev Event) ToStringArray() []string {
@@ -387,6 +391,8 @@ func (ev Event) ToStringArray() []string {
 	values[67] = ev.ReasonType
 	values[68] = ev.DisplayNamePrevious
 	values[69] = ev.DisplayNameCurrent
+	values[70] = ev.ContentTypePrevious
+	values[71] = ev.ContentTypeCurrent
 	return values
 }
 
