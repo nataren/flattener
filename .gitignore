@@ -1,3 +1,4 @@
+*.prof
 *.log
 *.csv
 csv
