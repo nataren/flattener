@@ -108,6 +108,8 @@ type Data struct {
 	UriHost   string   `xml:"_uri.host"`
 	UriScheme string   `xml:"_uri.scheme"`
 	UriQuery  string   `xml:"_uri.query"`
+	Query     string   `xml:"query"`
+	Constraint string  `xml:"constraint"`
 }
 
 type Diff struct {
@@ -281,6 +283,8 @@ var header []string = []string{
 	"change-comment",          // 72
 	"titlesegment.previous",   // 73
 	"titlesegment.current",    // 74
+	"data.query",              // 75
+	"data.constraint",         // 76
 }
 
 func (ev Event) ToStringArray() []string {
@@ -404,6 +408,8 @@ func (ev Event) ToStringArray() []string {
 	values[72] = ev.ChangeComment
 	values[73] = ev.TitleSegmentPrevious
 	values[74] = ev.TitleSegmentCurrent
+	values[75] = ev.Data.Query
+	values[76] = ev.Data.Constraint
 	return values
 }
 
