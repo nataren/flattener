@@ -104,12 +104,12 @@ type File struct {
 }
 
 type Data struct {
-	XMLName   xml.Name `xml:"data"`
-	UriHost   string   `xml:"_uri.host"`
-	UriScheme string   `xml:"_uri.scheme"`
-	UriQuery  string   `xml:"_uri.query"`
-	Query     string   `xml:"query"`
-	Constraint string  `xml:"constraint"`
+	XMLName    xml.Name `xml:"data"`
+	UriHost    string   `xml:"_uri.host"`
+	UriScheme  string   `xml:"_uri.scheme"`
+	UriQuery   string   `xml:"_uri.query"`
+	Query      string   `xml:"query"`
+	Constraint string   `xml:"constraint"`
 }
 
 type Diff struct {
@@ -155,6 +155,26 @@ type Grant struct {
 	Type    string   `xml:"type"`
 	Role    Role     `xml:"role"`
 	User    User     `xml:"user"`
+}
+
+type WorkflowData struct {
+	XMLName            xml.Name `xml:"data"`
+	UserId             string   `xml:"_userid"`
+	Username           string   `xml:"_username"`
+	CustomerActivityId string   `xml:"_customeractivityid"`
+	RequestId          string   `xml:"_requestid"`
+	Email              string   `xml:"_email"`
+	Search             string   `xml:"_search"`
+	Path               string   `xml:"_path"`
+
+	// TODO: There can be custom elements to deserialize. We should use the <param name="{name}">{value}</param> for the representation instead
+}
+
+type Workflow struct {
+	XMLName xml.Name     `xml:"workflow"`
+	Name    string       `xml:"name,attr"`
+	UriNext string       `xml:"uri.next"`
+	Data    WorkflowData `xml:"data"`
 }
 
 type Event struct {
@@ -205,86 +225,96 @@ type Event struct {
 	ChangeComment         string         `xml:"change-comment"`
 	TitleSegmentPrevious  string         `xml:"titlesegment.previous"`
 	TitleSegmentCurrent   string         `xml:"titlesegment.current"`
+	Workflow              Workflow       `xml:"workflow"`
 }
 
 var header []string = []string{
-	"id",                      // 0
-	"datetime",                // 1
-	"type",                    // 2
-	"cascading",               // 3
-	"wikiid",                  // 4
-	"journaled",               // 5
-	"version",                 // 6
-	"request.id",              // 7
-	"request.seq",             // 8
-	"request.count",           // 9
-	"request.signature",       // 10
-	"request.ip",              // 11
-	"request.sessionid",       // 12
-	"request.parameters",      // 13
-	"request.user.id",         // 14
-	"request.user.anonymous",  // 15
-	"isimage",                 // 16
-	"page.id",                 // 17
-	"page.path",               // 18
-	"file.id",                 // 19
-	"file.resid",              // 20
-	"file.filename",           // 21
-	"data.urihost",            // 22
-	"data.urischeme",          // 23
-	"data.uriquery",           // 24
-	"diff.added",              // 25
-	"diff.removed",            // 26
-	"diff.attributes",         // 27
-	"diff.structural",         // 28
-	"createreason",            // 29
-	"user.id",                 // 30
-	"user.name",               // 31
-	"createreasondetail",      // 32
-	"descendant.page.id",      // 33
-	"descendant.page.path",    // 34
-	"root.copy.page.id",       // 35
-	"root.copy.page.path",     // 36
-	"root.delete.page.id",     // 37
-	"root.delete.page.path",   // 38
-	"root.page.id",            // 39
-	"root.page.path",          // 40
-	"source.page.id",          // 41
-	"source.page.path",        // 42
-	"from",                    // 43
-	"to",                      // 44
-	"revision",                // 45
-	"revision.previous",       // 46
-	"revision.reverted",       // 47
-	"comment.id",              // 48
-	"comment.content.type",    // 49
-	"comment.content",         // 50
-	"tags.added",              // 51
-	"tags.removed",            // 52
-	"property.id",             // 53
-	"property.name",           // 54
-	"restriction.id",          // 55
-	"previous.restriction.id", // 56
-	"score",                   // 57
-	"grant.id",                // 58
-	"grant.type",              // 59
-	"grant.role.id",           // 60
-	"grant.user.id",           // 61
-	"any",                     // 62
-	"user.username",           // 63
-	"authmethodpassword",      // 64
-	"authmethodapikey",        // 65
-	"origin",                  // 66
-	"reasontype",              // 67
-	"displayname.previous",    // 68
-	"displayname.current",     // 69
-	"contenttype.previous",    // 70
-	"contenttype.current",     // 71
-	"change-comment",          // 72
-	"titlesegment.previous",   // 73
-	"titlesegment.current",    // 74
-	"data.query",              // 75
-	"data.constraint",         // 76
+	"id",                                // 0
+	"datetime",                          // 1
+	"type",                              // 2
+	"cascading",                         // 3
+	"wikiid",                            // 4
+	"journaled",                         // 5
+	"version",                           // 6
+	"request.id",                        // 7
+	"request.seq",                       // 8
+	"request.count",                     // 9
+	"request.signature",                 // 10
+	"request.ip",                        // 11
+	"request.sessionid",                 // 12
+	"request.parameters",                // 13
+	"request.user.id",                   // 14
+	"request.user.anonymous",            // 15
+	"isimage",                           // 16
+	"page.id",                           // 17
+	"page.path",                         // 18
+	"file.id",                           // 19
+	"file.resid",                        // 20
+	"file.filename",                     // 21
+	"data._urihost",                     // 22
+	"data._urischeme",                   // 23
+	"data._uriquery",                    // 24
+	"diff.added",                        // 25
+	"diff.removed",                      // 26
+	"diff.attributes",                   // 27
+	"diff.structural",                   // 28
+	"createreason",                      // 29
+	"user.id",                           // 30
+	"user.name",                         // 31
+	"createreasondetail",                // 32
+	"descendant.page.id",                // 33
+	"descendant.page.path",              // 34
+	"root.copy.page.id",                 // 35
+	"root.copy.page.path",               // 36
+	"root.delete.page.id",               // 37
+	"root.delete.page.path",             // 38
+	"root.page.id",                      // 39
+	"root.page.path",                    // 40
+	"source.page.id",                    // 41
+	"source.page.path",                  // 42
+	"from",                              // 43
+	"to",                                // 44
+	"revision",                          // 45
+	"revision.previous",                 // 46
+	"revision.reverted",                 // 47
+	"comment.id",                        // 48
+	"comment.content.type",              // 49
+	"comment.content",                   // 50
+	"tags.added",                        // 51
+	"tags.removed",                      // 52
+	"property.id",                       // 53
+	"property.name",                     // 54
+	"restriction.id",                    // 55
+	"previous.restriction.id",           // 56
+	"score",                             // 57
+	"grant.id",                          // 58
+	"grant.type",                        // 59
+	"grant.role.id",                     // 60
+	"grant.user.id",                     // 61
+	"any",                               // 62
+	"user.username",                     // 63
+	"authmethodpassword",                // 64
+	"authmethodapikey",                  // 65
+	"origin",                            // 66
+	"reasontype",                        // 67
+	"displayname.previous",              // 68
+	"displayname.current",               // 69
+	"contenttype.previous",              // 70
+	"contenttype.current",               // 71
+	"change-comment",                    // 72
+	"titlesegment.previous",             // 73
+	"titlesegment.current",              // 74
+	"data.query",                        // 75
+	"data.constraint",                   // 76
+	"workflow.name",                     // 77
+	"workflow.urinext",                  // 78
+	"workflow.data._userid",             // 79
+	"workflow.data._username",           // 80
+	"workflow.data._customeractivityid", // 81
+	"workflow.data._requestid",          // 82
+	"workflow.data._email",              // 83
+	"workflow.data._search",             // 84
+	"workflow.data._path",               // 85
 }
 
 func (ev Event) ToStringArray() []string {
@@ -410,6 +440,15 @@ func (ev Event) ToStringArray() []string {
 	values[74] = ev.TitleSegmentCurrent
 	values[75] = ev.Data.Query
 	values[76] = ev.Data.Constraint
+	values[77] = ev.Workflow.Name
+	values[78] = ev.Workflow.UriNext
+	values[79] = ev.Workflow.Data.UserId
+	values[80] = ev.Workflow.Data.Username
+	values[81] = ev.Workflow.Data.CustomerActivityId
+	values[82] = ev.Workflow.Data.RequestId
+	values[83] = ev.Workflow.Data.Email
+	values[84] = ev.Workflow.Data.Search
+	values[85] = ev.Workflow.Data.Path
 	return values
 }
 
@@ -441,14 +480,14 @@ func main() {
 
 	// Profiling settings
 	if cpuprofile != "" {
-        f, err := os.Create(cpuprofile)
-        if err != nil {
-            log.Fatal(err)
-        }
-        pprof.StartCPUProfile(f)
-        defer pprof.StopCPUProfile()
+		f, err := os.Create(cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
 	}
-	
+
 	// Parallelism settings
 	cpus := runtime.NumCPU()
 	runtime.GOMAXPROCS(cpus)
