@@ -50,7 +50,7 @@ type Request struct {
 	Count      string      `xml:"count,attr"`
 	Signature  Signature   `xml:"signature"`
 	IP         IP          `xml:"ip"`
-	SessionId  SessionID   `xml:"session-id"`
+	SessionID  SessionID   `xml:"session-id"`
 	Parameters []Parameter `xml:"parameters>param"`
 	User       User        `xml:"user"`
 }
@@ -375,7 +375,7 @@ func (ev Event) ToStringArray() []string {
 	values[9] = ev.Request.Count
 	values[10] = ev.Request.Signature.Value
 	values[11] = ev.Request.IP.Value
-	values[12] = ev.Request.SessionId.Value
+	values[12] = ev.Request.SessionID.Value
 	values[13] = params.String()
 	values[14] = ev.Request.User.ID
 	values[15] = ev.Request.User.Anonymous
