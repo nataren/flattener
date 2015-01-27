@@ -24,14 +24,14 @@ type IP struct {
 	Value   string   `xml:",innerxml"`
 }
 
-type SessionId struct {
+type SessionID struct {
 	XMLName xml.Name `xml:"session-id"`
 	Value   string   `xml:",innerxml"`
 }
 
 type User struct {
 	XMLName   xml.Name `xml:"user"`
-	Id        string   `xml:"id,attr"`
+	ID        string   `xml:"id,attr"`
 	Anonymous string   `xml:"anonymous,attr"`
 	Name      string   `xml:"name"`
 	Username  string   `xml:"username,attr"`
@@ -45,12 +45,12 @@ type Parameter struct {
 
 type Request struct {
 	XMLName    xml.Name    `xml:"request"`
-	Id         string      `xml:"id,attr"`
+	ID         string      `xml:"id,attr"`
 	Seq        string      `xml:"seq,attr"`
 	Count      string      `xml:"count,attr"`
 	Signature  Signature   `xml:"signature"`
 	IP         IP          `xml:"ip"`
-	SessionId  SessionId   `xml:"session-id"`
+	SessionId  SessionID   `xml:"session-id"`
 	Parameters []Parameter `xml:"parameters>param"`
 	User       User        `xml:"user"`
 }
@@ -62,52 +62,52 @@ type PagePath struct {
 
 type Page struct {
 	XMLName xml.Name `xml:"page"`
-	Id      string   `xml:"id,attr"`
+	ID      string   `xml:"id,attr"`
 	Path    PagePath `xml:"path"`
 }
 
 type RootPage struct {
 	XMLName xml.Name `xml:"root.page"`
-	Id      string   `xml:"id,attr"`
+	ID      string   `xml:"id,attr"`
 	Path    PagePath `xml:"path"`
 }
 
 type SourcePage struct {
 	XMLName xml.Name `xml:"source.page"`
-	Id      string   `xml:"id,attr"`
+	ID      string   `xml:"id,attr"`
 	Path    PagePath `xml:"path"`
 }
 
 type DescendantPage struct {
 	XMLName xml.Name `xml:"descendant.page"`
-	Id      string   `xml:"id,attr"`
+	ID      string   `xml:"id,attr"`
 	Path    PagePath `xml:"path"`
 }
 
 type RootCopyPage struct {
 	XMLName xml.Name `xml:"root.copy.page"`
-	Id      string   `xml:"id,attr"`
+	ID      string   `xml:"id,attr"`
 	Path    PagePath `xml:"path"`
 }
 
 type RootDeletePage struct {
 	XMLName xml.Name `xml:"root.delete.page"`
-	Id      string   `xml:"id,attr"`
+	ID      string   `xml:"id,attr"`
 	Path    PagePath `xml:"path"`
 }
 
 type File struct {
 	XMLName  xml.Name `xml:"file"`
-	Id       string   `xml:"id,attr"`
-	ResId    string   `xml:"res-id,attr"`
+	ID       string   `xml:"id,attr"`
+	ResID    string   `xml:"res-id,attr"`
 	Filename string   `xml:"filename"`
 }
 
 type Data struct {
 	XMLName    xml.Name `xml:"data"`
-	UriHost    string   `xml:"_uri.host"`
-	UriScheme  string   `xml:"_uri.scheme"`
-	UriQuery   string   `xml:"_uri.query"`
+	URIHost    string   `xml:"_uri.host"`
+	URIScheme  string   `xml:"_uri.scheme"`
+	URIQuery   string   `xml:"_uri.query"`
 	Query      string   `xml:"query"`
 	Constraint string   `xml:"constraint"`
 }
@@ -128,7 +128,7 @@ type CommentContent struct {
 
 type Comment struct {
 	XMLName xml.Name       `xml:"comment"`
-	Id      string         `xml:"id,attr"`
+	ID      string         `xml:"id,attr"`
 	Content CommentContent `xml:"content"`
 }
 
@@ -140,18 +140,18 @@ type Tag struct {
 
 type Property struct {
 	XMLName xml.Name `xml:"property"`
-	Id      string   `xml:"id"`
+	ID      string   `xml:"id"`
 	Name    string   `xml:"name"`
 }
 
 type Role struct {
 	XMLName xml.Name `xml:"role"`
-	Id      string   `xml:"id,attr"`
+	ID      string   `xml:"id,attr"`
 }
 
 type Grant struct {
 	XMLName xml.Name `xml:"grant"`
-	Id      string   `xml:"id"`
+	ID      string   `xml:"id"`
 	Type    string   `xml:"type"`
 	Role    Role     `xml:"role"`
 	User    User     `xml:"user"`
@@ -159,10 +159,10 @@ type Grant struct {
 
 type WorkflowData struct {
 	XMLName            xml.Name `xml:"data"`
-	UserId             string   `xml:"_userid"`
+	UserID             string   `xml:"_userid"`
 	Username           string   `xml:"_username"`
-	CustomerActivityId string   `xml:"_customeractivityid"`
-	RequestId          string   `xml:"_requestid"`
+	CustomerActivityID string   `xml:"_customeractivityid"`
+	RequestID          string   `xml:"_requestid"`
 	Email              string   `xml:"_email"`
 	Search             string   `xml:"_search"`
 	Path               string   `xml:"_path"`
@@ -173,13 +173,13 @@ type WorkflowData struct {
 type Workflow struct {
 	XMLName xml.Name     `xml:"workflow"`
 	Name    string       `xml:"name,attr"`
-	UriNext string       `xml:"uri.next"`
+	URINext string       `xml:"uri.next"`
 	Data    WorkflowData `xml:"data"`
 }
 
 type Event struct {
 	XMLName               xml.Name       `xml:"event"`
-	Id                    string         `xml:"id,attr"`
+	ID                    string         `xml:"id,attr"`
 	Datetime              string         `xml:"datetime,attr"`
 	Type                  string         `xml:"type,attr"`
 	Cascading             string         `xml:"cascading,attr"`
@@ -209,8 +209,8 @@ type Event struct {
 	TagsAdded             []Tag          `xml:"tags-added>tag"`
 	TagsRemoved           []Tag          `xml:"tags-removed>tag"`
 	Property              Property       `xml:"property"`
-	RestrictionId         string         `xml:"restriction-id"`
-	PreviousRestrictionId string         `xml:"previous.restriction-id"`
+	RestrictionID         string         `xml:"restriction-id"`
+	PreviousRestrictionID string         `xml:"previous.restriction-id"`
 	Score                 string         `xml:"score"`
 	Grant                 Grant          `xml:"grant"`
 	Any                   string         `xml:",any"`
@@ -228,7 +228,7 @@ type Event struct {
 	Workflow              Workflow       `xml:"workflow"`
 }
 
-var header []string = []string{
+var header = []string{
 	"id",                                // 0
 	"datetime",                          // 1
 	"type",                              // 2
@@ -363,68 +363,68 @@ func (ev Event) ToStringArray() []string {
 	}
 
 	// Populate the values
-	values[0] = ev.Id
+	values[0] = ev.ID
 	values[1] = ev.Datetime
 	values[2] = ev.Type
 	values[3] = ev.Cascading
 	values[4] = ev.Wikiid
 	values[5] = ev.Journaled
 	values[6] = ev.Version
-	values[7] = ev.Request.Id
+	values[7] = ev.Request.ID
 	values[8] = ev.Request.Seq
 	values[9] = ev.Request.Count
 	values[10] = ev.Request.Signature.Value
 	values[11] = ev.Request.IP.Value
 	values[12] = ev.Request.SessionId.Value
 	values[13] = params.String()
-	values[14] = ev.Request.User.Id
+	values[14] = ev.Request.User.ID
 	values[15] = ev.Request.User.Anonymous
 	values[16] = ev.IsImage
-	values[17] = ev.Page.Id
+	values[17] = ev.Page.ID
 	values[18] = ev.Page.Path.Value
-	values[19] = ev.File.Id
-	values[20] = ev.File.ResId
+	values[19] = ev.File.ID
+	values[20] = ev.File.ResID
 	values[21] = ev.File.Filename
-	values[22] = ev.Data.UriHost
-	values[23] = ev.Data.UriScheme
-	values[24] = ev.Data.UriQuery
+	values[22] = ev.Data.URIHost
+	values[23] = ev.Data.URIScheme
+	values[24] = ev.Data.URIQuery
 	values[25] = ev.Diff.Added
 	values[26] = ev.Diff.Removed
 	values[27] = ev.Diff.Attributes
 	values[28] = ev.Diff.Structural
 	values[29] = ev.CreateReason
-	values[30] = ev.User.Id
+	values[30] = ev.User.ID
 	values[31] = ev.User.Name
 	values[32] = ev.CreateReasonDetail
-	values[33] = ev.DescendantPage.Id
+	values[33] = ev.DescendantPage.ID
 	values[34] = ev.DescendantPage.Path.Value
-	values[35] = ev.RootCopyPage.Id
+	values[35] = ev.RootCopyPage.ID
 	values[36] = ev.RootCopyPage.Path.Value
-	values[37] = ev.RootDeletePage.Id
+	values[37] = ev.RootDeletePage.ID
 	values[38] = ev.RootDeletePage.Path.Value
-	values[39] = ev.RootPage.Id
+	values[39] = ev.RootPage.ID
 	values[40] = ev.RootPage.Path.Value
-	values[41] = ev.SourcePage.Id
+	values[41] = ev.SourcePage.ID
 	values[42] = ev.SourcePage.Path.Value
 	values[43] = ev.From
 	values[44] = ev.To
 	values[45] = ev.Revision
 	values[46] = ev.RevisionPrevious
 	values[47] = ev.RevisionReverted
-	values[48] = ev.Comment.Id
+	values[48] = ev.Comment.ID
 	values[49] = ev.Comment.Content.Type
 	values[50] = ev.Comment.Content.Value
 	values[51] = tagsAdded.String()
 	values[52] = tagsRemoved.String()
-	values[53] = ev.Property.Id
+	values[53] = ev.Property.ID
 	values[54] = ev.Property.Name
-	values[55] = ev.RestrictionId
-	values[56] = ev.PreviousRestrictionId
+	values[55] = ev.RestrictionID
+	values[56] = ev.PreviousRestrictionID
 	values[57] = ev.Score
-	values[58] = ev.Grant.Id
+	values[58] = ev.Grant.ID
 	values[59] = ev.Grant.Type
-	values[60] = ev.Grant.Role.Id
-	values[61] = ev.Grant.User.Id
+	values[60] = ev.Grant.Role.ID
+	values[61] = ev.Grant.User.ID
 	values[62] = ev.Any
 	values[63] = ev.User.Username
 	values[64] = ev.AuthMethodPassword
@@ -441,11 +441,11 @@ func (ev Event) ToStringArray() []string {
 	values[75] = ev.Data.Query
 	values[76] = ev.Data.Constraint
 	values[77] = ev.Workflow.Name
-	values[78] = ev.Workflow.UriNext
-	values[79] = ev.Workflow.Data.UserId
+	values[78] = ev.Workflow.URINext
+	values[79] = ev.Workflow.Data.UserID
 	values[80] = ev.Workflow.Data.Username
-	values[81] = ev.Workflow.Data.CustomerActivityId
-	values[82] = ev.Workflow.Data.RequestId
+	values[81] = ev.Workflow.Data.CustomerActivityID
+	values[82] = ev.Workflow.Data.RequestID
 	values[83] = ev.Workflow.Data.Email
 	values[84] = ev.Workflow.Data.Search
 	values[85] = ev.Workflow.Data.Path
