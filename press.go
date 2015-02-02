@@ -349,6 +349,57 @@ var header = []string{
 	"workflow.data._path",               // 85
 }
 
+type Event struct {
+	XMLName               xml.Name       `xml:"event"`
+	ID                    string         `xml:"id,attr"`
+	Datetime              string         `xml:"datetime,attr"`
+	Type                  string         `xml:"type,attr"`
+	Cascading             string         `xml:"cascading,attr"`
+	Wikiid                string         `xml:"wikiid,attr"`
+	Journaled             string         `xml:"journaled,attr"`
+	Version               string         `xml:"version,attr"`
+	Request               Request        `xml:"request"`
+	IsImage               string         `xml:"isimage"`
+	Page                  Page           `xml:"page"`
+	File                  File           `xml:"file"`
+	Data                  Data           `xml:"data"`
+	Diff                  Diff           `xml:"diff"`
+	CreateReason          string         `xml:"create-reason"`
+	User                  User           `xml:"user"`
+	CreateReasonDetail    string         `xml:"create-reason-detail"`
+	DescendantPage        DescendantPage `xml:"descendant.page"`
+	RootCopyPage          RootCopyPage   `xml:"root.copy.page"`
+	RootDeletePage        RootDeletePage `xml:"root.delete.page"`
+	RootPage              RootPage       `xml:"root.page"`
+	SourcePage            SourcePage     `xml:"source.page"`
+	From                  string         `xml:"from"`
+	To                    string         `xml:"to"`
+	Revision              string         `xml:"revision"`
+	RevisionPrevious      string         `xml:"revision.previous"`
+	RevisionReverted      string         `xml:"revision.reverted"`
+	Comment               Comment        `xml:"comment"`
+	TagsAdded             []Tag          `xml:"tags-added>tag"`
+	TagsRemoved           []Tag          `xml:"tags-removed>tag"`
+	Property              Property       `xml:"property"`
+	RestrictionID         string         `xml:"restriction-id"`
+	PreviousRestrictionID string         `xml:"previous.restriction-id"`
+	Score                 string         `xml:"score"`
+	Grant                 Grant          `xml:"grant"`
+	Any                   string         `xml:",any"`
+	AuthMethodPassword    string         `xml:"authmethod-password"`
+	AuthMethodApikey      string         `xml:"authmethod-apikey"`
+	Origin                string         `xml:"origin"`
+	ReasonType            string         `xml:"reason-type"`
+	DisplayNamePrevious   string         `xml:"displayname.previous"`
+	DisplayNameCurrent    string         `xml:"displayname.current"`
+	ContentTypePrevious   string         `xml:"contenttype.previous"`
+	ContentTypeCurrent    string         `xml:"contenttype.current"`
+	ChangeComment         string         `xml:"change-comment"`
+	TitleSegmentPrevious  string         `xml:"titlesegment.previous"`
+	TitleSegmentCurrent   string         `xml:"titlesegment.current"`
+	Workflow              Workflow       `xml:"workflow"`
+}
+
 type Signature struct {
 	XMLName xml.Name `xml:"signature"`
 	Value   string   `xml:",innerxml"`
@@ -510,55 +561,4 @@ type Workflow struct {
 	Name    string       `xml:"name,attr"`
 	URINext string       `xml:"uri.next"`
 	Data    WorkflowData `xml:"data"`
-}
-
-type Event struct {
-	XMLName               xml.Name       `xml:"event"`
-	ID                    string         `xml:"id,attr"`
-	Datetime              string         `xml:"datetime,attr"`
-	Type                  string         `xml:"type,attr"`
-	Cascading             string         `xml:"cascading,attr"`
-	Wikiid                string         `xml:"wikiid,attr"`
-	Journaled             string         `xml:"journaled,attr"`
-	Version               string         `xml:"version,attr"`
-	Request               Request        `xml:"request"`
-	IsImage               string         `xml:"isimage"`
-	Page                  Page           `xml:"page"`
-	File                  File           `xml:"file"`
-	Data                  Data           `xml:"data"`
-	Diff                  Diff           `xml:"diff"`
-	CreateReason          string         `xml:"create-reason"`
-	User                  User           `xml:"user"`
-	CreateReasonDetail    string         `xml:"create-reason-detail"`
-	DescendantPage        DescendantPage `xml:"descendant.page"`
-	RootCopyPage          RootCopyPage   `xml:"root.copy.page"`
-	RootDeletePage        RootDeletePage `xml:"root.delete.page"`
-	RootPage              RootPage       `xml:"root.page"`
-	SourcePage            SourcePage     `xml:"source.page"`
-	From                  string         `xml:"from"`
-	To                    string         `xml:"to"`
-	Revision              string         `xml:"revision"`
-	RevisionPrevious      string         `xml:"revision.previous"`
-	RevisionReverted      string         `xml:"revision.reverted"`
-	Comment               Comment        `xml:"comment"`
-	TagsAdded             []Tag          `xml:"tags-added>tag"`
-	TagsRemoved           []Tag          `xml:"tags-removed>tag"`
-	Property              Property       `xml:"property"`
-	RestrictionID         string         `xml:"restriction-id"`
-	PreviousRestrictionID string         `xml:"previous.restriction-id"`
-	Score                 string         `xml:"score"`
-	Grant                 Grant          `xml:"grant"`
-	Any                   string         `xml:",any"`
-	AuthMethodPassword    string         `xml:"authmethod-password"`
-	AuthMethodApikey      string         `xml:"authmethod-apikey"`
-	Origin                string         `xml:"origin"`
-	ReasonType            string         `xml:"reason-type"`
-	DisplayNamePrevious   string         `xml:"displayname.previous"`
-	DisplayNameCurrent    string         `xml:"displayname.current"`
-	ContentTypePrevious   string         `xml:"contenttype.previous"`
-	ContentTypeCurrent    string         `xml:"contenttype.current"`
-	ChangeComment         string         `xml:"change-comment"`
-	TitleSegmentPrevious  string         `xml:"titlesegment.previous"`
-	TitleSegmentCurrent   string         `xml:"titlesegment.current"`
-	Workflow              Workflow       `xml:"workflow"`
 }
