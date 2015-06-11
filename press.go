@@ -12,17 +12,22 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"strings"
+	"sync"
 )
 
 func main() {
 
 	// Setup flags
-	var dirname string
-	var debug bool
-	var cpuprofile string
+	var (
+		dirname    string
+		debug      bool
+		cpuprofile string
+		workers    int
+	)
 	flag.StringVar(&dirname, "dir", "", "The path to the folder where the log files live")
 	flag.BoolVar(&debug, "debug", false, "Enable debug messages, in particular it shows which item has been scheduled for processing")
 	flag.StringVar(&cpuprofile, "cpuprofile", "", "Write cpu profile to file")
+	flag.IntVar(&workers, "workers", 100, "The limit of concurrent workers at a time")
 	flag.Parse()
 
 	// Validate flags
@@ -53,76 +58,89 @@ func main() {
 	// Parallelism settings
 	cpus := runtime.NumCPU()
 	runtime.GOMAXPROCS(cpus)
-	numberOfProcessors := len(dirinfo)
-	finished := make(chan bool, numberOfProcessors)
-	for _, fi := range dirinfo {
-		filename := fi.Name()
-		go func() {
-			if debug {
-				log.Printf("Currently processing file '%s'", filename)
-			}
-			if !strings.HasSuffix(filename, ".log") {
-				log.Printf("Will skip file '%s'", filename)
-				finished <- true
-				return
-			}
 
-			// Open file
-			events, err := os.Open(filename)
-			if err != nil {
-				log.Printf("Error opening file '%s'", filename)
-				finished <- true
-				return
-			}
-			defer events.Close()
-			r := bufio.NewReader(events)
+	// Iteration counters
+	start := 0
+	increment := workers
+	tentativeOffset := increment
+	limit := len(dirinfo) - 1
+	for {
 
-			// Create new file
-			csvFile, err := os.Create(filename + ".csv")
-			if err != nil {
-				log.Printf("Error creating csv file for '%s'", filename)
-				finished <- true
-				return
-			}
-			w := csv.NewWriter(bufio.NewWriter(csvFile))
-			w.Write(header)
+		// Stop processing once we are done with all the files
+		if start >= limit {
+			break
+		}
+		var wg sync.WaitGroup
 
-			// Read all the events
-			for {
-				event, err := r.ReadString('\x00')
+		// Process chunk
+		offset := min(tentativeOffset, limit)
+		for _, fi := range dirinfo[start:offset] {
+			filename := fi.Name()
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				if debug {
+					log.Printf("Currently processing file '%s'", filename)
+				}
+				if !strings.HasSuffix(filename, ".log") {
+					log.Printf("Will skip file '%s'", filename)
+					return
+				}
+
+				// Open file
+				events, err := os.Open(filename)
 				if err != nil {
-					if err == io.EOF {
-						if debug {
-							log.Printf("Finished processing '%s'", filename)
+					log.Printf("Error opening file '%s': %v", filename, err)
+					return
+				}
+				defer events.Close()
+				r := bufio.NewReader(events)
+
+				// Create new file
+				csvFile, err := os.Create(filename + ".csv")
+				if err != nil {
+					log.Printf("Error creating csv file for '%s'", filename)
+					return
+				}
+				w := csv.NewWriter(bufio.NewWriter(csvFile))
+				w.Write(header)
+
+				// Read all the events
+				for {
+					event, err := r.ReadString('\x00')
+					if err != nil {
+						if err == io.EOF {
+							if debug {
+								log.Printf("Finished processing '%s'", filename)
+							}
+							break
 						}
+						log.Printf("There was an error while reading from the events stream, will exit, '%s'", err)
 						break
 					}
-					log.Printf("There was an error while reading from the events stream, will exit, '%s'", err)
-					break
+					if event == "" {
+						break
+					}
+					ev := Event{}
+					unmarshalErr := xml.Unmarshal([]byte(event), &ev)
+					if unmarshalErr != nil {
+						log.Printf("Could not deserialize: '%s', '%s', '%s'", filename, event, unmarshalErr)
+						continue
+					}
+					if ev.Any != "" {
+						log.Printf("'%s': The event '%s' was found not having all its members deserialized. Any = '%s'", event, filename, ev.Any)
+					}
+					w.Write(ev.ToStringArray())
 				}
-				if event == "" {
-					break
-				}
-				ev := Event{}
-				unmarshalErr := xml.Unmarshal([]byte(event), &ev)
-				if unmarshalErr != nil {
-					log.Printf("Could not deserialize: '%s', '%s', '%s'", filename, event, unmarshalErr)
-					continue
-				}
-				if ev.Any != "" {
-					log.Printf("'%s': The event '%s' was found not having all its members deserialized. Any = '%s'", event, filename, ev.Any)
-				}
-				w.Write(ev.ToStringArray())
-			}
-			w.Flush()
-			finished <- true
-			return
-		}()
+				w.Flush()
+				return
+			}()
+		}
+		wg.Wait()
+		start += increment
+		tentativeOffset += increment
 	}
-	for i := 0; i < numberOfProcessors; i++ {
-		<-finished
-	}
-	log.Printf("Used %d CPUs", cpus)
+	log.Printf("used %d CPUs", cpus)
 }
 
 func (ev Event) ToStringArray() []string {
@@ -561,4 +579,11 @@ type Workflow struct {
 	Name    string       `xml:"name,attr"`
 	URINext string       `xml:"uri.next"`
 	Data    WorkflowData `xml:"data"`
+}
+
+func min(x, y int) int {
+	if x <= y {
+		return x
+	}
+	return y
 }
