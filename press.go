@@ -416,6 +416,7 @@ type Event struct {
 	TitleSegmentPrevious  string         `xml:"titlesegment.previous"`
 	TitleSegmentCurrent   string         `xml:"titlesegment.current"`
 	Workflow              Workflow       `xml:"workflow"`
+	UpdateReason          string         `xml:"update-reason"`
 }
 
 type Signature struct {
